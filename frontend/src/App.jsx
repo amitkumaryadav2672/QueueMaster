@@ -9,6 +9,13 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('Waiting');
+
+  const getWorkspaceClass = () => {
+    if (activeTab === 'Waiting') return 'queue-workspace show-waiting';
+    if (activeTab === 'Being Served') return 'queue-workspace show-serving';
+    return 'queue-workspace show-completed';
+  };
 
   const fetchQueue = async (showLoading = true) => {
     if (showLoading) setLoading(true);
@@ -126,35 +133,75 @@ export default function App() {
           <AddCustomerForm onAddCustomer={handleAddCustomer} loading={actionLoading} />
         </aside>
 
-        <main className="queue-workspace">
-          <QueueColumn
-            title="Waiting"
-            titleColorClass="waiting-color"
-            badgeColorClass="waiting-bg"
-            icon={<Clock size={18} />}
-            customers={waitingCustomers}
-            onUpdateStatus={handleUpdateStatus}
-            onRemove={handleRemove}
-          />
-          <QueueColumn
-            title="Being Served"
-            titleColorClass="serving-color"
-            badgeColorClass="serving-bg"
-            icon={<Play size={18} />}
-            customers={servingCustomers}
-            onUpdateStatus={handleUpdateStatus}
-            onRemove={handleRemove}
-          />
-          <QueueColumn
-            title="Completed"
-            titleColorClass="completed-color"
-            badgeColorClass="completed-bg"
-            icon={<CheckCircle size={18} />}
-            customers={completedCustomers}
-            onUpdateStatus={handleUpdateStatus}
-            onRemove={handleRemove}
-          />
-        </main>
+        <div className="workspace-container">
+          <div className="mobile-tabs-navigation">
+            <button 
+              className={`tab-navigation-btn ${activeTab === 'Waiting' ? 'active-tab waiting-border' : ''}`}
+              onClick={() => setActiveTab('Waiting')}
+            >
+              Waiting ({waitingCustomers.length})
+            </button>
+            <button 
+              className={`tab-navigation-btn ${activeTab === 'Being Served' ? 'active-tab serving-border' : ''}`}
+              onClick={() => setActiveTab('Being Served')}
+            >
+              Serving ({servingCustomers.length})
+            </button>
+            <button 
+              className={`tab-navigation-btn ${activeTab === 'Completed' ? 'active-tab completed-border' : ''}`}
+              onClick={() => setActiveTab('Completed')}
+            >
+              Completed ({completedCustomers.length})
+            </button>
+          </div>
+
+          <main className={getWorkspaceClass()}>
+            {loading && queue.length === 0 ? (
+              <div className="loading-state" style={{
+                gridColumn: '1 / -1',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '4rem',
+                color: 'var(--text-muted)'
+              }}>
+                <RefreshCw size={40} className="animate-spin" style={{ marginBottom: '1rem', color: 'var(--primary)' }} />
+                <p>Loading queue data...</p>
+              </div>
+            ) : (
+              <>
+                <QueueColumn
+                  title="Waiting"
+                  titleColorClass="waiting-color"
+                  badgeColorClass="waiting-bg"
+                  icon={<Clock size={18} />}
+                  customers={waitingCustomers}
+                  onUpdateStatus={handleUpdateStatus}
+                  onRemove={handleRemove}
+                />
+                <QueueColumn
+                  title="Being Served"
+                  titleColorClass="serving-color"
+                  badgeColorClass="serving-bg"
+                  icon={<Play size={18} />}
+                  customers={servingCustomers}
+                  onUpdateStatus={handleUpdateStatus}
+                  onRemove={handleRemove}
+                />
+                <QueueColumn
+                  title="Completed"
+                  titleColorClass="completed-color"
+                  badgeColorClass="completed-bg"
+                  icon={<CheckCircle size={18} />}
+                  customers={completedCustomers}
+                  onUpdateStatus={handleUpdateStatus}
+                  onRemove={handleRemove}
+                />
+              </>
+            )}
+          </main>
+        </div>
       </div>
     </div>
   );

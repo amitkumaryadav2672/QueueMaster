@@ -465,3 +465,112 @@ body {
     filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.7));
   }
 }
+
+/* ==========================================================================
+   Mobile Responsive Navigation & Layout Adjustments
+   ========================================================================== */
+
+.workspace-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.mobile-tabs-navigation {
+  display: none; /* Hidden on Desktop */
+  background: rgba(17, 24, 39, 0.6);
+  border: 1px solid var(--border-color);
+  padding: 0.35rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.5rem;
+  gap: 0.25rem;
+}
+
+.tab-navigation-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 0.6rem 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.tab-navigation-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.tab-navigation-btn.active-tab {
+  background: var(--bg-card-hover);
+  color: #FFF;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.waiting-border { border-bottom: 2px solid var(--accent-waiting); }
+.serving-border { border-bottom: 2px solid var(--accent-serving); }
+.completed-border { border-bottom: 2px solid var(--accent-completed); }
+
+/* Media Queries for Mobile Responsiveness */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.25rem;
+  }
+
+  .app-header div {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .mobile-tabs-navigation {
+    display: flex; /* Shown only on Mobile screen widths */
+  }
+
+  /* Control Column visibility in workspace */
+  .queue-workspace .queue-column {
+    display: none !important;
+  }
+
+  .queue-workspace.show-waiting .queue-column:nth-child(1) {
+    display: flex !important;
+  }
+
+  .queue-workspace.show-serving .queue-column:nth-child(2) {
+    display: flex !important;
+  }
+
+  .queue-workspace.show-completed .queue-column:nth-child(3) {
+    display: flex !important;
+  }
+
+  .queue-column {
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-section h1 {
+    font-size: 1.5rem;
+  }
+  
+  .glass-card {
+    padding: 1.25rem;
+  }
+
+  .customer-card {
+    padding: 0.95rem;
+  }
+}
+

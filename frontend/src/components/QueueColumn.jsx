@@ -27,7 +27,7 @@ export default function QueueColumn({
         {customers.length === 0 ? (
           <div className="empty-state">
             <Inbox className="empty-state-icon" size={32} />
-            <p>No customers</p>
+            <p>No customers in queue.</p>
           </div>
         ) : (
           customers.map((customer, index) => (

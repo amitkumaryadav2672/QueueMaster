@@ -10,9 +10,11 @@ const connectDB = async () => {
     });
     
     console.log(`MongoDB Connected: ${conn.connection.host}`);
+    global.useInMemory = false;
   } catch (error) {
     console.error(`Error connecting to MongoDB: ${error.message}`);
-    process.exit(1);
+    console.warn('⚠️ FALLBACK: Starting in-memory queue server...');
+    global.useInMemory = true;
   }
 };
 

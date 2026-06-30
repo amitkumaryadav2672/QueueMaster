@@ -19,9 +19,7 @@ services:
       - "5000:5000"
     environment:
       - PORT=5000
-      - MONGO_URI=mongodb://mongo:27017/queuemaster
-    depends_on:
-      - mongo
+      - MONGO_URI=mongodb+srv://amityadav847409_db_user:5S4NKpYYPBITbzoH@cluster0.y5lopmn.mongodb.net/queuemaster
     networks:
       - queuemaster-network
     restart: always

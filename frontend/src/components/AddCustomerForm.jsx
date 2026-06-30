@@ -4,11 +4,25 @@ import { UserPlus } from 'lucide-react';
 export default function AddCustomerForm({ onAddCustomer, loading }) {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const [serviceType, setServiceType] = useState('General');
+
+  const handlePhoneChange = (e) => {
+    const value = e.target.value.replace(/\D/g, ''); // Keep only digits
+    if (value.length <= 10) {
+      setPhone(value);
+      setPhoneError('');
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name.trim()) return;
+
+    if (phone.trim() && phone.trim().length !== 10) {
+      setPhoneError('Phone number must be exactly 10 digits');
+      return;
+    }
 
     onAddCustomer({
       name: name.trim(),
@@ -19,6 +33,7 @@ export default function AddCustomerForm({ onAddCustomer, loading }) {
     // Reset Form
     setName('');
     setPhone('');
+    setPhoneError('');
     setServiceType('General');
   };
 
@@ -49,11 +64,16 @@ export default function AddCustomerForm({ onAddCustomer, loading }) {
             id="customer-phone"
             type="tel"
             className="input-field"
-            placeholder="Enter phone number"
+            placeholder="Enter 10-digit phone number"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={handlePhoneChange}
             disabled={loading}
           />
+          {phoneError && (
+            <span style={{ color: '#F87171', fontSize: '0.75rem', marginTop: '4px', display: 'block' }}>
+              {phoneError}
+            </span>
+          )}
         </div>
 
         <div className="form-group">

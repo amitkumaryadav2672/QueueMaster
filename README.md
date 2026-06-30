@@ -1,97 +1,126 @@
 # QueueMaster
 
-QueueMaster is a waiting queue management web application designed to help small businesses (clinics, barber shops, passport offices, banks, restaurants) manage their active customers.
+QueueMaster is aWaiting Queue Management web application designed to help small businesses (clinics, barber shops, passport offices, banks, restaurants) manage their active customer queues.
+
+---
 
 ## Tech Stack
-- **Frontend**: React (Vite) served via Nginx
-- **Backend**: Node.js (Express)
-- **Database**: MongoDB
-- **Containerization**: Docker & Docker Compose
+* **Frontend**: React (Vite) served via Nginx reverse-proxy
+* **Backend**: Node.js (Express)
+* **Database**: MongoDB (Mongoose) with **Automatic In-Memory Array Fallback**
+* **Containerization**: Docker & Docker Compose
+
+---
 
 ## Features
-- **Add Customer**: Add a customer with name, optional phone, and specific service type.
-- **Queue Progress Board**:
-  - **Waiting**: Customers who have joined the queue. Can be transitioned to "Being Served" or removed.
-  - **Being Served**: Customers currently being served. Can be marked "Completed" or cancelled.
-  - **Completed**: Past sessions history with automatic duration metrics.
-- **Automatic Status Tracking**: Computes waiting time and service duration.
-- **Polling Updates**: Automatically updates state every 10 seconds.
+* **Add Customer**: Add a customer with name, optional phone, and service type.
+* **Queue Progress Board**:
+  * **Waiting**: Shows customers in line. Can be transitioned to "Being Served" or deleted.
+  * **Being Served**: Shows customers currently being served. Can be marked "Completed" or cancelled.
+  * **Completed**: Shows session history with automatic duration metrics.
+* **Robust DB Fallback**: If MongoDB is unavailable, the backend automatically falls back to an **In-Memory storage array** to prevent downtime.
+* **Auto-Polling Dashboard**: Automatically pulls dashboard updates every 10 seconds.
+
+---
+
+## Folder Structure
+```text
+QueueMaster/
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   │   └── db.js               # MongoDB connection setup
+│   │   ├── controllers/
+│   │   │   └── queueController.js  # API request handlers (MongoDB & In-memory)
+│   │   ├── models/
+│   │   │   └── Customer.js         # Mongoose schema
+│   │   ├── routes/
+│   │   │   └── queueRoutes.js      # Express routes mapping
+│   │   └── app.js                  # Express application setup
+│   ├── Dockerfile
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── AddCustomerForm.jsx # Add customer input interface
+│   │   │   ├── CustomerCard.jsx    # Card component with status buttons
+│   │   │   └── QueueColumn.jsx     # Waiting/Serving/Completed columns
+│   │   ├── services/
+│   │   │   └── api.js              # Fetch requests to API
+│   │   ├── App.jsx                 # Dashboard coordinator
+│   │   ├── index.css               # Styling
+│   │   └── main.jsx
+│   ├── Dockerfile
+│   ├── nginx.conf                  # Nginx proxy configuration
+│   └── package.json
+├── docker-compose.yml
+└── README.md
+```
+
+---
 
 ## Environment Variables
 
 ### Backend Configuration
-Create a `.env` file in the `backend/` folder (or inject them directly into the environment):
-- `PORT`: The port on which the Express server runs (default: `5000`).
-- `MONGO_URI`: The MongoDB connection URI (default: `mongodb://localhost:27017/queuemaster`).
+Create a `.env` file in the `backend/` folder:
+* `PORT`: The port on which the Express server runs (default: `5000`).
+* `MONGO_URI`: The MongoDB connection URI (default: `mongodb+srv://...` for Atlas, or `mongodb://mongo:27017/queuemaster` for local).
 
 ### Frontend Configuration
-Build environment variables for Vite:
-- `VITE_API_URL`: The URL of the API gateway (default: `/api` when routed through Nginx, or `http://localhost:5000/api` for direct local development).
+* `VITE_API_URL`: The URL of the API gateway (default: `/api` when routed through Nginx proxy, or `http://localhost:5000/api` for direct local development).
 
 ---
 
 ## Running the Application
 
-### Prerequisites
-- **Docker**: Installed and running on the host machine.
-- **Docker Compose**: Required to orchestrate all services easily.
-
----
-
 ### Option A: Running with Docker Compose (Recommended)
-This option automatically starts MongoDB, the Express backend, and the React frontend (with Nginx reverse-proxy) configured to talk to each other.
+This starts the Node backend and React frontend (with Nginx proxying `/api` requests to the backend) in containerized environments:
 
-1. Navigate to the root workspace directory.
+1. Navigate to the root directory.
 2. Build and start the containers:
    ```bash
    docker compose up --build
    ```
 
----
+### Option B: Running Locally (For Quick Testing)
+If you don't have Docker installed, you can run the application directly on your host machine.
 
-### Option B: Running Individual Docker Containers Manually
+1. **Start Backend**:
+   ```bash
+   cd backend
+   npm install
+   npm start
+   ```
+   *(Note: If no MongoDB database is detected locally or via `.env`, the server will automatically log a fallback warning and use an in-memory storage array instead).*
 
-#### 1. Setup Database
-First, ensure you have a running MongoDB instance. If running in Docker:
-```bash
-docker run -d --name mongo-db -p 27017:27017 mongo:latest
-```
-
-#### 2. Backend Container
-*   **How to Build**:
-    ```bash
-    cd backend
-    docker build -t queuemaster-backend .
-    ```
-*   **How to Run**:
-    Connect it to the host network (or Docker bridge network) and specify the MongoDB connection string:
-    ```bash
-    docker run -d --name queuemaster-backend-container -p 5000:5000 -e MONGO_URI=mongodb://host.docker.internal:27017/queuemaster queuemaster-backend
-    ```
-
-#### 3. Frontend Container
-*   **How to Build**:
-    ```bash
-    cd ../frontend
-    docker build -t queuemaster-frontend .
-    ```
-*   **How to Run**:
-    ```bash
-    docker run -d --name queuemaster-frontend-container -p 3000:3000 queuemaster-frontend
-    ```
+2. **Start Frontend**:
+   ```bash
+   cd ../frontend
+   npm install
+   npm run dev
+   ```
 
 ---
 
-## URLs / Endpoints to Access the Application
+## Access URLs
 
-- **Frontend Application**: [http://localhost:3000](http://localhost:3000)
-- **Backend Health Check**: [http://localhost:5000/health](http://localhost:5000/health)
-- **Backend API Base**: [http://localhost:5000/api/queue](http://localhost:5000/api/queue)
+* **Frontend Dashboard**: [http://localhost:3000](http://localhost:3000) (when using Docker Compose) or [http://localhost:5173](http://localhost:5173) (when using local Dev Server)
+* **Backend Health Check**: [http://localhost:5000/health](http://localhost:5000/health)
+* **Backend API Base**: [http://localhost:5000/api/queue](http://localhost:5000/api/queue)
 
+---
 
 ## Product Decisions & Assumptions
-- **Strict FIFO Queue**: The queue strictly enforces first-in, first-out serving. The business owner can only serve the next waiting customer (the oldest ticket at the top of the list). "Serve" buttons are disabled for all subsequent customers until they reach the front of the line, avoiding out-of-order service.
-- **Completed History Order**: The "Completed" list sorts sessions by their completion timestamp in descending order (newest first). This keeps the most recently served customers immediately visible at the top of the history.
-- **Duplicate Names**: Since multiple customers at a business might share names (e.g., "John Smith"), the app permits duplicate names in the queue. Each customer is assigned a unique identifier (`_id`) in MongoDB.
-- **Data Cleanup**: To maintain a lean database, deleting/removing a customer from any stage completely clears their record.
+1. **Strict FIFO Serving**: The queue enforces first-in, first-out sequence. The "Serve" button is only active for the customer at the top of the Waiting list (next-in-line). Other cards display a tooltip stating they must wait for the front customer to be served.
+2. **Duplicate Names**: The system permits duplicate names (e.g. multiple "Amit" entries) and differentiates them using automatically generated unique IDs (`_id`).
+3. **Completed Sessions History**: The Completed list sorts sessions by their completion timestamp in descending order (newest first) to ensure immediate visibility of recently completed actions.
+4. **Data Cleanup**: Removing/deleting a customer completely clears their record from the active/historical dataset to keep storage clean and lean.
 
+---
+
+## Future Scope (If given another 3 hours)
+* **Role-Based Authentication**: Separate Owner/Staff dashboard and public queue visibility screens.
+* **Estimate Waiting Time**: Algorithm to calculate and display estimated waiting time for queue members based on average historical completion times.
+* **Socket.IO Integration**: Replace 10s auto-polling with real-time websocket pushes for instant state synchronizations across all active dashboards.
+* **SMS Notifications**: Automated SMS alerts (e.g. Twilio) when a customer reaches "Next-in-line" status.
+* **Priority Queue**: Flag VIP/Urgent customers to move them to the top of the waiting list.
