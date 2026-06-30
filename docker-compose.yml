@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: queuemaster-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - queuemaster-network
+    restart: always
+
+  backend:
+    build: ./backend
+    container_name: queuemaster-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGO_URI=mongodb://mongo:27017/queuemaster
+    depends_on:
+      - mongo
+    networks:
+      - queuemaster-network
+    restart: always
+
+  frontend:
+    build: ./frontend
+    container_name: queuemaster-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - queuemaster-network
+    restart: always
+
+networks:
+  queuemaster-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
