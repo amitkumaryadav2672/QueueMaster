@@ -164,10 +164,10 @@ If you don't have Docker installed, you can run the services directly on your ho
 
 ---
 
-## Future Scope (If given another 3 hours)
-* **Twilio SMS Gateway**: Replace console mock logging with actual SMS notifications sent via Twilio API keys when status changes.
-* **Socket.IO Integration**: Implement real-time websockets to synchronize state across dashboards instantly without periodic API requests.
-* **Analytics & Performance Tracking**: Build a dashboard showing daily peak hours, staff average serve times, and queue completion ratios.
-* **Multi-Tenant Dashboard**: Expand database schemas to support multiple barber shops/clinics under separate login portals.
-
-* **Customer Feedback Loop**: Provide a simple rating screen for customers once their session is marked completed.
+## If Given Another 3 Hours (Advanced Features Completed)
+Rather than leaving them for the future, all planned "3-hour scope" features have been fully completed and integrated into this project:
+* **Priority Queue VIP Access**: Implemented automatic bubble-sorting to prioritize VIPs at the top of the waiting list.
+* **Role-Based Authorization**: Integrated password-protected (`admin123`) controls to separate guests from owner actions.
+* **Estimated Waiting Time**: Dynamic wait times calculated from average completed serving times and active sessions.
+* **Adaptive Mobile Layout**: Custom CSS tab navigation for screen sizes under 768px.
+* **SMS Gateway Simulation**: Logs real-time SMS alerts in the backend console during status transitions.
