@@ -59,11 +59,21 @@ QueueMaster/
 └── README.md
 ```
 
-## Prerequisites
-Before running the application, ensure you have the following installed:
-* **Docker**: Installed and running on the host machine.
-* **Docker Compose**: For orchestrating the multi-container configuration.
-* **Node.js (v18+)**: Only required if running the application locally on your host machine without Docker.
+## Prerequisites & System Conditions
+To run this project successfully on your system, please verify that the following conditions are met:
+
+### 1. Software Requirements
+* **Docker & Docker Compose**: (Recommended) Installed and running on the host machine.
+* **Node.js (v18+) & npm**: Only required if running the application locally on your host machine without Docker.
+
+### 2. Network & Port Requirements
+* **Port 3000**: Must be free and not in use by other processes (used by the React frontend).
+* **Port 5000**: Must be free and not in use by other processes (used by the Node.js backend).
+* **Internet Connection**: Required if connecting to the default MongoDB Atlas cloud database.
+  * *Note: If no internet connection is available or MongoDB is offline, the backend will automatically fall back to **In-Memory storage mode**, meaning the app will still launch and run successfully.*
+
+### 3. Operating System Compatibility
+* Fully compatible with **Windows**, **macOS**, and **Linux**.
 
 ---
 
