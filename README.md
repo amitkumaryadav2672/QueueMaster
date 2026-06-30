@@ -59,6 +59,12 @@ QueueMaster/
 └── README.md
 ```
 
+## Prerequisites
+Before running the application, ensure you have the following installed:
+* **Docker**: Installed and running on the host machine.
+* **Docker Compose**: For orchestrating the multi-container configuration.
+* **Node.js (v18+)**: Only required if running the application locally on your host machine without Docker.
+
 ---
 
 ## Environment Variables
