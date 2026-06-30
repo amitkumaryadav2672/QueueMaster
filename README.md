@@ -139,6 +139,7 @@ If you don't have Docker installed, you can run the services directly on your ho
 * **Frontend Dashboard**: [http://localhost:3000](http://localhost:3000) (when using Docker/Docker Compose) or [http://localhost:5173](http://localhost:5173) (when using local Dev Server)
 * **Backend Health Check**: [http://localhost:5000/health](http://localhost:5000/health)
 * **Backend API Base**: [http://localhost:5000/api/queue](http://localhost:5000/api/queue)
+* **Default Admin Password**: `admin123` (Use this password to unlock Admin Mode in the header and trigger staff actions).
 
 ---
 
