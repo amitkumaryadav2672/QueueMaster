@@ -8,7 +8,8 @@ export default function CustomerCard({
   isNextInLine,
   index = 0,
   avgServiceMins = 5,
-  activeServingCount = 0
+  activeServingCount = 0,
+  isAdmin = false
 }) {
   const formatTime = (dateStr) => {
     if (!dateStr) return '';
@@ -111,60 +112,68 @@ export default function CustomerCard({
       </div>
 
       <div className="customer-actions">
-        {customer.status === 'Waiting' && (
+        {!isAdmin ? (
+          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: '3.5px', padding: '0.2rem 0' }}>
+            🔒 Admin access required to manage
+          </span>
+        ) : (
           <>
-            <button
-              onClick={() => onUpdateStatus(customer._id, 'Being Served')}
-              className="btn-action btn-serve"
-              title={isNextInLine ? "Serve Customer" : "Must serve next-in-line customer first"}
-              disabled={!isNextInLine}
-              style={!isNextInLine ? { opacity: 0.4, cursor: 'not-allowed' } : {}}
-            >
-              <Play size={12} />
-              Serve
-            </button>
-            <button
-              onClick={() => onRemove(customer._id)}
-              className="btn-action btn-remove"
-              title="Remove Customer"
-            >
-              <Trash2 size={12} />
-              Remove
-            </button>
-          </>
-        )}
+            {customer.status === 'Waiting' && (
+              <>
+                <button
+                  onClick={() => onUpdateStatus(customer._id, 'Being Served')}
+                  className="btn-action btn-serve"
+                  title={isNextInLine ? "Serve Customer" : "Must serve next-in-line customer first"}
+                  disabled={!isNextInLine}
+                  style={!isNextInLine ? { opacity: 0.4, cursor: 'not-allowed' } : {}}
+                >
+                  <Play size={12} />
+                  Serve
+                </button>
+                <button
+                  onClick={() => onRemove(customer._id)}
+                  className="btn-action btn-remove"
+                  title="Remove Customer"
+                >
+                  <Trash2 size={12} />
+                  Remove
+                </button>
+              </>
+            )}
 
-        {customer.status === 'Being Served' && (
-          <>
-            <button
-              onClick={() => onUpdateStatus(customer._id, 'Completed')}
-              className="btn-action btn-complete"
-              title="Complete Session"
-            >
-              <CheckCircle size={12} />
-              Complete
-            </button>
-            <button
-              onClick={() => onRemove(customer._id)}
-              className="btn-action btn-remove"
-              title="Remove Customer"
-            >
-              <Trash2 size={12} />
-              Cancel
-            </button>
-          </>
-        )}
+            {customer.status === 'Being Served' && (
+              <>
+                <button
+                  onClick={() => onUpdateStatus(customer._id, 'Completed')}
+                  className="btn-action btn-complete"
+                  title="Complete Session"
+                >
+                  <CheckCircle size={12} />
+                  Complete
+                </button>
+                <button
+                  onClick={() => onRemove(customer._id)}
+                  className="btn-action btn-remove"
+                  title="Remove Customer"
+                >
+                  <Trash2 size={12} />
+                  Cancel
+                </button>
+              </>
+            )}
 
-        {customer.status === 'Completed' && (
-          <button
-            onClick={() => onRemove(customer._id)}
-            className="btn-action btn-remove"
-            title="Delete Record"
-            style={{ marginLeft: 'auto' }}
-          >
-            <Trash2 size={12} />
-            Delete
-          </button>
+            {customer.status === 'Completed' && (
+              <button
+                onClick={() => onRemove(customer._id)}
+                className="btn-action btn-remove"
+                title="Delete Record"
+                style={{ marginLeft: 'auto' }}
+              >
+                <Trash2 size={12} />
+                Delete
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>

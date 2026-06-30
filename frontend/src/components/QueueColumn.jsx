@@ -11,7 +11,8 @@ export default function QueueColumn({
   onUpdateStatus, 
   onRemove,
   avgServiceMins,
-  activeServingCount
+  activeServingCount,
+  isAdmin
 }) {
   return (
     <div className="queue-column">
@@ -42,6 +43,7 @@ export default function QueueColumn({
               index={index}
               avgServiceMins={avgServiceMins}
               activeServingCount={activeServingCount}
+              isAdmin={isAdmin}
             />
           ))
         )}

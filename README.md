@@ -76,16 +76,46 @@ Create a `.env` file in the `backend/` folder:
 ## Running the Application
 
 ### Option A: Running with Docker Compose (Recommended)
-This starts the Node backend and React frontend (with Nginx proxying `/api` requests to the backend) in containerized environments:
+This launches the Node backend, React frontend (with Nginx reverse-proxy), and configures network bindings automatically:
 
 1. Navigate to the root directory.
-2. Build and start the containers:
+2. Build and start the services:
    ```bash
    docker compose up --build
    ```
 
-### Option B: Running Locally (For Quick Testing)
-If you don't have Docker installed, you can run the application directly on your host machine.
+---
+
+### Option B: Running Individual Docker Containers Manually
+
+#### 1. Setup Backend Container
+* **Step 1: Build the backend Docker container**
+  ```bash
+  cd backend
+  docker build -t queuemaster-backend .
+  ```
+* **Step 2: Run the backend Docker container**
+  Run the container exposing port 5000:
+  ```bash
+  docker run -d --name queuemaster-backend -p 5000:5000 -e PORT=5000 -e MONGO_URI="mongodb+srv://amityadav847409_db_user:5S4NKpYYPBITbzoH@cluster0.y5lopmn.mongodb.net/queuemaster" queuemaster-backend
+  ```
+
+#### 2. Setup Frontend Container
+* **Step 1: Build the frontend Docker container**
+  ```bash
+  cd ../frontend
+  docker build -t queuemaster-frontend .
+  ```
+* **Step 2: Run the frontend Docker container**
+  Run the container exposing port 3000:
+  ```bash
+  docker run -d --name queuemaster-frontend -p 3000:3000 queuemaster-frontend
+  ```
+
+---
+
+### Option C: Running Locally (For Quick Testing)
+If you don't have Docker installed, you can run the services directly on your host machine:
 
 1. **Start Backend**:
    ```bash
@@ -93,7 +123,7 @@ If you don't have Docker installed, you can run the application directly on your
    npm install
    npm start
    ```
-   *(Note: If no MongoDB database is detected locally or via `.env`, the server will automatically log a fallback warning and use an in-memory storage array instead).*
+   *(Note: If no MongoDB connection is configured or fails to connect, the server will automatically fallback to an in-memory storage array).*
 
 2. **Start Frontend**:
    ```bash
@@ -106,23 +136,38 @@ If you don't have Docker installed, you can run the application directly on your
 
 ## Access URLs
 
-* **Frontend Dashboard**: [http://localhost:3000](http://localhost:3000) (when using Docker Compose) or [http://localhost:5173](http://localhost:5173) (when using local Dev Server)
+* **Frontend Dashboard**: [http://localhost:3000](http://localhost:3000) (when using Docker/Docker Compose) or [http://localhost:5173](http://localhost:5173) (when using local Dev Server)
 * **Backend Health Check**: [http://localhost:5000/health](http://localhost:5000/health)
 * **Backend API Base**: [http://localhost:5000/api/queue](http://localhost:5000/api/queue)
 
 ---
 
-## Product Decisions & Assumptions
-1. **Strict FIFO Serving**: The queue enforces first-in, first-out sequence. The "Serve" button is only active for the customer at the top of the Waiting list (next-in-line). Other cards display a tooltip stating they must wait for the front customer to be served.
-2. **Duplicate Names**: The system permits duplicate names (e.g. multiple "Amit" entries) and differentiates them using automatically generated unique IDs (`_id`).
-3. **Completed Sessions History**: The Completed list sorts sessions by their completion timestamp in descending order (newest first) to ensure immediate visibility of recently completed actions.
-4. **Data Cleanup**: Removing/deleting a customer completely clears their record from the active/historical dataset to keep storage clean and lean.
+## Product Decisions & Assumptions (Mandatory QA)
+
+1. **Should duplicate customer names be allowed?**
+   * **Yes**. In business queues, multiple customers can share names (e.g. two "Amit"s). The system handles this by assigning a unique ID (`_id`) to every session.
+2. **Can a completed customer return to the queue?**
+   * **Yes**. A completed customer is treated as a past session. The same customer can join the waiting list again as a new session.
+3. **Should the queue always be FIFO?**
+   * **Primarily, Yes**. Chronological first-in, first-out serving is the standard. However, we also support a **VIP Priority** system, where VIPs bubble to the top of the waiting list and are served in FIFO sequence relative to other VIPs.
+4. **What happens if the queue is empty?**
+   * The columns render a clean, empty placeholder displaying `"No customers in queue."`
+5. **Staff/Owner Admin Control**:
+   * To prevent guests from modifying the queue statuses, we implemented a password-protected **Admin Mode** (password: `admin123`). Guests can add themselves and see wait times, but only admins can trigger transitions (Serve, Complete, Cancel, Delete).
+
+---
+
+## Compromises Made (1-Hour Limit)
+* **Web Sockets vs Polling**: Implemented a lightweight 10-second polling sync instead of real-time Socket.IO which requires heavier configuration.
+* **Basic Auth**: Implemented client-side password locks (`admin123`) rather than setting up full OAuth or session cookies with backend JWT verification.
+* **Automatic Fallback DB**: Handled fallback in-memory database storage directly in the controller layer rather than building a separate database repository layer.
 
 ---
 
 ## Future Scope (If given another 3 hours)
-* **Role-Based Authentication**: Separate Owner/Staff credentials dashboard and public-facing queue visibility status screens.
-* **Socket.IO Integration**: Replace 10s auto-polling with real-time web sockets for instant state synchronizations across all active dashboards.
-* **SMS Notifications**: Automated SMS alerts (e.g. Twilio API) to notify guests when their turn is next or when their session starts.
-* **Analytics Dashboard**: Weekly/monthly reports showing peak queue hours, average customer serving time, and staff performance metrics.
+* **Twilio SMS Gateway**: Replace console mock logging with actual SMS notifications sent via Twilio API keys when status changes.
+* **Socket.IO Integration**: Implement real-time websockets to synchronize state across dashboards instantly without periodic API requests.
+* **Analytics & Performance Tracking**: Build a dashboard showing daily peak hours, staff average serve times, and queue completion ratios.
+* **Multi-Tenant Dashboard**: Expand database schemas to support multiple barber shops/clinics under separate login portals.
+
 * **Customer Feedback Loop**: Provide a simple rating screen for customers once their session is marked completed.

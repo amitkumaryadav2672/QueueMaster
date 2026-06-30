@@ -10,6 +10,7 @@ export default function App() {
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('Waiting');
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const getWorkspaceClass = () => {
     if (activeTab === 'Waiting') return 'queue-workspace show-waiting';
@@ -118,7 +119,25 @@ export default function App() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <button
+            onClick={() => {
+              if (isAdmin) {
+                setIsAdmin(false);
+              } else {
+                const pw = prompt('Enter Admin Password:');
+                if (pw === 'admin123') {
+                  setIsAdmin(true);
+                } else if (pw !== null) {
+                  alert('Incorrect password!');
+                }
+              }
+            }}
+            className={`btn-action ${isAdmin ? 'btn-remove' : 'btn-serve'}`}
+            style={{ fontWeight: '700', padding: '0.45rem 0.85rem' }}
+          >
+            {isAdmin ? '🔒 Lock Admin' : '🔓 Admin Mode'}
+          </button>
           <div className="status-badge-overall">
             Total Active: <strong>{waitingCustomers.length + servingCustomers.length}</strong>
           </div>
@@ -201,6 +220,7 @@ export default function App() {
                   onRemove={handleRemove}
                   avgServiceMins={avgServiceMins}
                   activeServingCount={servingCustomers.length}
+                  isAdmin={isAdmin}
                 />
                 <QueueColumn
                   title="Being Served"
@@ -210,6 +230,7 @@ export default function App() {
                   customers={servingCustomers}
                   onUpdateStatus={handleUpdateStatus}
                   onRemove={handleRemove}
+                  isAdmin={isAdmin}
                 />
                 <QueueColumn
                   title="Completed"
@@ -219,6 +240,7 @@ export default function App() {
                   customers={completedCustomers}
                   onUpdateStatus={handleUpdateStatus}
                   onRemove={handleRemove}
+                  isAdmin={isAdmin}
                 />
               </>
             )}

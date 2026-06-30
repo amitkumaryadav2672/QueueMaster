@@ -89,6 +89,12 @@ exports.updateCustomerStatus = async (req, res) => {
       
       if (status === 'Being Served') {
         customer.servedAt = new Date().toISOString();
+        if (customer.phone) {
+          console.log(`\n========================================`);
+          console.log(`[SMS GATEWAY] Sending Alert to ${customer.phone}...`);
+          console.log(`[SMS GATEWAY] "Hi ${customer.name}, you are next! Please proceed to the service counter."`);
+          console.log(`========================================\n`);
+        }
       } else if (status === 'Completed') {
         customer.completedAt = new Date().toISOString();
       }
@@ -111,6 +117,13 @@ exports.updateCustomerStatus = async (req, res) => {
 
     if (!customer) {
       return res.status(404).json({ success: false, error: 'Customer not found' });
+    }
+
+    if (status === 'Being Served' && customer.phone) {
+      console.log(`\n========================================`);
+      console.log(`[SMS GATEWAY] Sending Alert to ${customer.phone}...`);
+      console.log(`[SMS GATEWAY] "Hi ${customer.name}, you are next! Please proceed to the service counter."`);
+      console.log(`========================================\n`);
     }
 
     res.status(200).json({ success: true, data: customer });
