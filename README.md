@@ -162,12 +162,3 @@ If you don't have Docker installed, you can run the services directly on your ho
 * **Basic Auth**: Implemented client-side password locks (`admin123`) rather than setting up full OAuth or session cookies with backend JWT verification.
 * **Automatic Fallback DB**: Handled fallback in-memory database storage directly in the controller layer rather than building a separate database repository layer.
 
----
-
-## If Given Another 3 Hours (Advanced Features Completed)
-Rather than leaving them for the future, all planned "3-hour scope" features have been fully completed and integrated into this project:
-* **Priority Queue VIP Access**: Implemented automatic bubble-sorting to prioritize VIPs at the top of the waiting list.
-* **Role-Based Authorization**: Integrated password-protected (`admin123`) controls to separate guests from owner actions.
-* **Estimated Waiting Time**: Dynamic wait times calculated from average completed serving times and active sessions.
-* **Adaptive Mobile Layout**: Custom CSS tab navigation for screen sizes under 768px.
-* **SMS Gateway Simulation**: Logs real-time SMS alerts in the backend console during status transitions.
