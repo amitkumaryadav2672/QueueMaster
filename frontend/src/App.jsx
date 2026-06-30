@@ -81,11 +81,31 @@ export default function App() {
   };
 
   // Filter queue into categories
-  const waitingCustomers = queue.filter(c => c.status === 'Waiting');
+  const waitingCustomers = queue
+    .filter(c => c.status === 'Waiting')
+    .sort((a, b) => {
+      // VIPs bubble to the top
+      if (a.priority === 'VIP' && b.priority !== 'VIP') return -1;
+      if (a.priority !== 'VIP' && b.priority === 'VIP') return 1;
+      // Preserve FIFO (oldest first)
+      return new Date(a.joinedAt) - new Date(b.joinedAt);
+    });
+
   const servingCustomers = queue.filter(c => c.status === 'Being Served');
   const completedCustomers = queue
     .filter(c => c.status === 'Completed')
     .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
+
+  // Compute average service duration in minutes dynamically
+  const completedWithDuration = completedCustomers.filter(c => c.servedAt && c.completedAt);
+  let avgServiceMins = 5; // Default fallback: 5 mins
+  if (completedWithDuration.length > 0) {
+    const totalDuration = completedWithDuration.reduce((acc, c) => {
+      const duration = new Date(c.completedAt) - new Date(c.servedAt);
+      return acc + duration;
+    }, 0);
+    avgServiceMins = Math.max(1, Math.round((totalDuration / completedWithDuration.length) / 60000));
+  }
 
   return (
     <div className="app-container">
@@ -179,6 +199,8 @@ export default function App() {
                   customers={waitingCustomers}
                   onUpdateStatus={handleUpdateStatus}
                   onRemove={handleRemove}
+                  avgServiceMins={avgServiceMins}
+                  activeServingCount={servingCustomers.length}
                 />
                 <QueueColumn
                   title="Being Served"

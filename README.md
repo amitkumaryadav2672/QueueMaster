@@ -14,10 +14,12 @@ QueueMaster is aWaiting Queue Management web application designed to help small 
 
 ## Features
 * **Add Customer**: Add a customer with name, optional phone, and service type.
+* **Priority Queue (VIP Access)**: Easily mark high-priority customers as "VIP" to automatically bubble them to the top of the waiting list while preserving chronological order (FIFO) among VIPs and Normal customers.
 * **Queue Progress Board**:
   * **Waiting**: Shows customers in line. Can be transitioned to "Being Served" or deleted.
   * **Being Served**: Shows customers currently being served. Can be marked "Completed" or cancelled.
   * **Completed**: Shows session history with automatic duration metrics.
+* **Dynamic Estimated Waiting Time**: Calculates average session durations dynamically from completed sessions and reports wait times for each customer in line.
 * **Robust DB Fallback**: If MongoDB is unavailable, the backend automatically falls back to an **In-Memory storage array** to prevent downtime.
 * **Auto-Polling Dashboard**: Automatically pulls dashboard updates every 10 seconds.
 
@@ -119,8 +121,8 @@ If you don't have Docker installed, you can run the application directly on your
 ---
 
 ## Future Scope (If given another 3 hours)
-* **Role-Based Authentication**: Separate Owner/Staff dashboard and public queue visibility screens.
-* **Estimate Waiting Time**: Algorithm to calculate and display estimated waiting time for queue members based on average historical completion times.
-* **Socket.IO Integration**: Replace 10s auto-polling with real-time websocket pushes for instant state synchronizations across all active dashboards.
-* **SMS Notifications**: Automated SMS alerts (e.g. Twilio) when a customer reaches "Next-in-line" status.
-* **Priority Queue**: Flag VIP/Urgent customers to move them to the top of the waiting list.
+* **Role-Based Authentication**: Separate Owner/Staff credentials dashboard and public-facing queue visibility status screens.
+* **Socket.IO Integration**: Replace 10s auto-polling with real-time web sockets for instant state synchronizations across all active dashboards.
+* **SMS Notifications**: Automated SMS alerts (e.g. Twilio API) to notify guests when their turn is next or when their session starts.
+* **Analytics Dashboard**: Weekly/monthly reports showing peak queue hours, average customer serving time, and staff performance metrics.
+* **Customer Feedback Loop**: Provide a simple rating screen for customers once their session is marked completed.

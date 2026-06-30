@@ -1,7 +1,15 @@
 import React from 'react';
 import { Phone, Clock, Play, CheckCircle, Trash2 } from 'lucide-react';
 
-export default function CustomerCard({ customer, onUpdateStatus, onRemove, isNextInLine }) {
+export default function CustomerCard({ 
+  customer, 
+  onUpdateStatus, 
+  onRemove, 
+  isNextInLine,
+  index = 0,
+  avgServiceMins = 5,
+  activeServingCount = 0
+}) {
   const formatTime = (dateStr) => {
     if (!dateStr) return '';
     return new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -13,6 +21,14 @@ export default function CustomerCard({ customer, onUpdateStatus, onRemove, isNex
     const diffMs = end - start;
     const diffMins = Math.round(diffMs / 60000);
     return `${diffMins} min${diffMins !== 1 ? 's' : ''}`;
+  };
+
+  const getEstWaitTime = () => {
+    if (index === 0 && activeServingCount === 0) {
+      return 'Immediate';
+    }
+    const mins = (index + activeServingCount) * avgServiceMins;
+    return `~${mins} min${mins !== 1 ? 's' : ''}`;
   };
 
   const getServiceTime = () => {
@@ -27,17 +43,29 @@ export default function CustomerCard({ customer, onUpdateStatus, onRemove, isNex
   return (
     <div className="customer-card">
       <div className="customer-header">
-        <div className="customer-name">
+        <div className="customer-name" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
           {customer.name}
+          {customer.priority === 'VIP' && (
+            <span style={{
+              background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(251, 191, 36, 0.25) 100%)',
+              color: '#FBBF24',
+              border: '1px solid rgba(251, 191, 36, 0.4)',
+              borderRadius: '12px',
+              padding: '1px 6px',
+              fontSize: '0.6rem',
+              fontWeight: '800',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em'
+            }}>👑 VIP</span>
+          )}
           {customer.status === 'Waiting' && isNextInLine && (
             <span style={{
               background: 'rgba(16, 185, 129, 0.2)',
               color: '#34D399',
               border: '1px solid rgba(16, 185, 129, 0.4)',
               borderRadius: '12px',
-              padding: '2px 6px',
-              fontSize: '0.65rem',
-              marginLeft: '8px',
+              padding: '1px 6px',
+              fontSize: '0.6rem',
               fontWeight: '700',
               textTransform: 'uppercase',
               letterSpacing: '0.05em'
@@ -60,7 +88,12 @@ export default function CustomerCard({ customer, onUpdateStatus, onRemove, isNex
           Joined: {formatTime(customer.joinedAt)}
         </div>
         {customer.status === 'Waiting' && (
-          <div>Waiting: {getWaitTime()}</div>
+          <>
+            <div>Waiting: {getWaitTime()}</div>
+            <div style={{ color: '#FBBF24', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+              <Clock size={11} /> Est. Wait: {getEstWaitTime()}
+            </div>
+          </>
         )}
         {customer.status === 'Being Served' && (
           <>

@@ -22,6 +22,11 @@ const CustomerSchema = new mongoose.Schema({
     enum: ['Waiting', 'Being Served', 'Completed'],
     default: 'Waiting'
   },
+  priority: {
+    type: String,
+    enum: ['Normal', 'VIP'],
+    default: 'Normal'
+  },
   joinedAt: {
     type: Date,
     default: Date.now

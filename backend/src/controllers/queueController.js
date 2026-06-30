@@ -30,7 +30,7 @@ exports.getQueue = async (req, res) => {
 // @access  Public
 exports.addCustomer = async (req, res) => {
   try {
-    const { name, phone, serviceType } = req.body;
+    const { name, phone, serviceType, priority } = req.body;
     
     if (!name) {
       return res.status(400).json({ success: false, error: 'Name is required' });
@@ -43,6 +43,7 @@ exports.addCustomer = async (req, res) => {
         phone,
         serviceType: serviceType || 'General',
         status: 'Waiting',
+        priority: priority || 'Normal',
         joinedAt: new Date().toISOString(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -55,7 +56,8 @@ exports.addCustomer = async (req, res) => {
       name,
       phone,
       serviceType: serviceType || 'General',
-      status: 'Waiting'
+      status: 'Waiting',
+      priority: priority || 'Normal'
     });
 
     res.status(201).json({ success: true, data: customer });

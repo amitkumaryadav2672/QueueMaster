@@ -6,6 +6,7 @@ export default function AddCustomerForm({ onAddCustomer, loading }) {
   const [phone, setPhone] = useState('');
   const [phoneError, setPhoneError] = useState('');
   const [serviceType, setServiceType] = useState('General');
+  const [vip, setVip] = useState(false);
 
   const handlePhoneChange = (e) => {
     const value = e.target.value.replace(/\D/g, ''); // Keep only digits
@@ -27,7 +28,8 @@ export default function AddCustomerForm({ onAddCustomer, loading }) {
     onAddCustomer({
       name: name.trim(),
       phone: phone.trim() || undefined,
-      serviceType: serviceType.trim()
+      serviceType: serviceType.trim(),
+      priority: vip ? 'VIP' : 'Normal'
     });
 
     // Reset Form
@@ -35,6 +37,7 @@ export default function AddCustomerForm({ onAddCustomer, loading }) {
     setPhone('');
     setPhoneError('');
     setServiceType('General');
+    setVip(false);
   };
 
   return (
@@ -91,6 +94,20 @@ export default function AddCustomerForm({ onAddCustomer, loading }) {
             <option value="Support">Quick Support</option>
             <option value="Express">Express Check-in</option>
           </select>
+        </div>
+
+        <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '1.25rem 0' }}>
+          <input
+            id="vip-customer"
+            type="checkbox"
+            checked={vip}
+            onChange={(e) => setVip(e.target.checked)}
+            disabled={loading}
+            style={{ width: 'auto', cursor: 'pointer', transform: 'scale(1.2)' }}
+          />
+          <label htmlFor="vip-customer" style={{ marginBottom: 0, cursor: 'pointer', fontWeight: '600', color: '#FBBF24' }}>
+            👑 Mark as VIP Customer
+          </label>
         </div>
 
         <button type="submit" className="btn btn-primary" disabled={loading || !name.trim()}>

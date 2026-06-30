@@ -9,7 +9,9 @@ export default function QueueColumn({
   icon, 
   customers = [], 
   onUpdateStatus, 
-  onRemove 
+  onRemove,
+  avgServiceMins,
+  activeServingCount
 }) {
   return (
     <div className="queue-column">
@@ -37,6 +39,9 @@ export default function QueueColumn({
               onUpdateStatus={onUpdateStatus}
               onRemove={onRemove}
               isNextInLine={title === 'Waiting' ? index === 0 : true}
+              index={index}
+              avgServiceMins={avgServiceMins}
+              activeServingCount={activeServingCount}
             />
           ))
         )}
