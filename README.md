@@ -94,28 +94,36 @@ This launches the Node backend, React frontend (with Nginx reverse-proxy), and c
 
 ### Option B: Running Individual Docker Containers Manually
 
-#### 1. Setup Backend Container
+To allow the frontend container (which runs Nginx reverse-proxy) to communicate with the backend container, they must be attached to the same Docker network.
+
+#### 1. Create a Shared Docker Network
+```bash
+docker network create queuemaster-net
+```
+
+#### 2. Setup Backend Container
 * **Step 1: Build the backend Docker container**
   ```bash
   cd backend
   docker build -t queuemaster-backend .
   ```
 * **Step 2: Run the backend Docker container**
-  Run the container exposing port 5000:
+  Expose port 5000, attach it to the shared network, and alias it as `backend` so Nginx can resolve it:
   ```bash
-  docker run -d --name queuemaster-backend -p 5000:5000 -e PORT=5000 -e MONGO_URI="mongodb+srv://amityadav847409_db_user:5S4NKpYYPBITbzoH@cluster0.y5lopmn.mongodb.net/queuemaster" queuemaster-backend
+  docker run -d --name queuemaster-backend --network queuemaster-net --network-alias backend -p 5000:5000 -e PORT=5000 -e MONGO_URI="mongodb+srv://amityadav847409_db_user:5S4NKpYYPBITbzoH@cluster0.y5lopmn.mongodb.net/queuemaster" queuemaster-backend
   ```
+  *(Note: To run in in-memory mode, simply omit the `-e MONGO_URI="..."` parameter).*
 
-#### 2. Setup Frontend Container
+#### 3. Setup Frontend Container
 * **Step 1: Build the frontend Docker container**
   ```bash
   cd ../frontend
   docker build -t queuemaster-frontend .
   ```
 * **Step 2: Run the frontend Docker container**
-  Run the container exposing port 3000:
+  Run the container exposing port 3000 on the same network:
   ```bash
-  docker run -d --name queuemaster-frontend -p 3000:3000 queuemaster-frontend
+  docker run -d --name queuemaster-frontend --network queuemaster-net -p 3000:3000 queuemaster-frontend
   ```
 
 ---
